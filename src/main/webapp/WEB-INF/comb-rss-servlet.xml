@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-feed="http://www.springframework.org/schema/integration/feed"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/feed http://www.springframework.org/schema/integration/feed/spring-integration-feed.xsd">
+
+	<context:component-scan base-package="com.my.rss" />
+
+	<!-- Map returned view name "rssView" to bean id "rssView" -->
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+	<bean id="rssView" class="com.my.rss.RssView">
+		<property name="title" value="Yhdistetyt uutiset | Kauppalehti.fi" ></property>
+		<property name="description" value="Tähän on yhdistetty seuraavat syötteet: Oma Yritys, Oma Raha, Auto ja Teknologia."></property>
+		<property name="link" value="http://www.kauppalehti.fi"></property>
+	</bean>	
+	
+	<int-feed:inbound-channel-adapter id="feedAdapter1" 
+						channel="feedChannel1" 
+						auto-startup="true" 
+						url="http://rss.kauppalehti.fi/rss/yritysuutiset.jsp">
+		<int:poller fixed-rate="10000" max-messages-per-poll="100" />
+	</int-feed:inbound-channel-adapter>
+	<int:channel id="feedChannel1">
+		<int:queue/>
+	</int:channel>	  
+	<bean id="rssSource1" class="com.my.rss.RssSource">
+		<property name="feedChannel" ref="feedChannel1"></property>
+	</bean>
+	
+	<int-feed:inbound-channel-adapter id="feedAdapter2" 
+						channel="feedChannel2" 
+						auto-startup="true" 
+						url="http://rss.kauppalehti.fi/rss/omaraha.jsp">
+		<int:poller fixed-rate="10000" max-messages-per-poll="100" />
+	</int-feed:inbound-channel-adapter>
+	<int:channel id="feedChannel2">
+		<int:queue/>
+	</int:channel>  
+	<bean id="rssSource2" class="com.my.rss.RssSource">
+		<property name="feedChannel" ref="feedChannel2"></property>
+	</bean>
+	
+	<int-feed:inbound-channel-adapter id="feedAdapter3" 
+			channel="feedChannel3" 
+			auto-startup="true" 
+			url="http://rss.kauppalehti.fi/rss/auto.jsp">
+		<int:poller fixed-rate="10000" max-messages-per-poll="100" />
+	</int-feed:inbound-channel-adapter>
+	<int:channel id="feedChannel3">
+		<int:queue/>
+	</int:channel>  
+	<bean id="rssSource3" class="com.my.rss.RssSource">
+		<property name="feedChannel" ref="feedChannel3"></property>
+	</bean>
+	
+	<int-feed:inbound-channel-adapter id="feedAdapter4" 
+			channel="feedChannel4" 
+			auto-startup="true" 
+			url="http://blogit.kauppalehti.fi/evs/aid/3/recent/50/">
+		<int:poller fixed-rate="10000" max-messages-per-poll="100" />
+	</int-feed:inbound-channel-adapter>
+	<int:channel id="feedChannel4">
+		<int:queue/>
+	</int:channel>	  
+	<bean id="rssSource4" class="com.my.rss.RssSource">
+		<property name="feedChannel" ref="feedChannel4"></property>
+	</bean>	
+
+</beans>
