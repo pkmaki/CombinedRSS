@@ -1,4 +1,4 @@
 CombinedRSS
 ===========
 
-Combined RSS
+Combine 4 selected RSS feeds
